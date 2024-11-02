@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Function to get CPU usage
+get_cpu_usage() {
+    CPU_MAX=$(nproc)
+    CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
+    echo "$CPU_MAX/$CPU_USAGE"
+}
+
+# Function to get RAM usage
+get_ram_usage() {
+    RAM_MAX=$(free -h --si | grep Mem | awk '{print $2}')
+    RAM_USAGE=$(free -h --si | grep Mem | awk '{print $3}')
+    echo "$RAM_MAX/$RAM_USAGE"
+}
+
+# Get other information
+HOSTNAME=$(hostname)
+CPU_INFO=$(lscpu | grep "Model name:" | awk -F ': ' '{print $2}')
+SHELL=$(basename "$SHELL")
+
+# ASCII art for Ubuntu
+ASCII_ART=$(cat << "EOF"
+  _   _ _             _        
+ | | | | |__ _  _ _ _| |_ _  _ 
+ | |_| | '_ \ || | ' \  _| || |
+  \___/|_.__/\_,_|_||_\__|\_,_|
+                               
+EOF
+)
+
+# Get values
+CPU_USAGE=$(get_cpu_usage)
+RAM_USAGE=$(get_ram_usage)
+
+# Output the results
+echo -e "$ASCII_ART"
+echo -e "\n                                               CPU Usage : $CPU_USAGE"
+echo -e "                                               RAM Usage : $RAM_USAGE"
+echo -e "                                               Hosted in : Germany / PeakVPS"
+echo -e "                                               CPU : $CPU_INFO"
+echo -e "                                               Shell : $SHELL"
